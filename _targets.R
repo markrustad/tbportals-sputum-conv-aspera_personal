@@ -10,7 +10,7 @@ list(
   
   # create list of file targets
   tar_files(files, paste("data/", list.files("data"), sep = "")),
-
+  
   # map over files using list iteration
   tar_target(data,
              read_csv(files) %>% type.convert(),
@@ -27,3 +27,5 @@ list(
   tar_target(plot1, generate_plot1(df_pos_init))
   
 )
+
+# tar_load(c("files", "data", "df_init", "df_pos_init", "plot1"))
