@@ -1,7 +1,9 @@
 ## library() calls go here
-options(tidyverse.quiet = TRUE)
-library(tidyverse)
 library(conflicted)
+library(dotenv)
+library(targets)
+library(tarchetypes)
+library(tidyverse)
 library(magrittr)
 library(here)
 

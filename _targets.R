@@ -1,12 +1,15 @@
-library(targets)
-library(tarchetypes)
-source("R/packages.R")
-source("R/functions.R")
+## Load your packages, e.g. library(targets).
+source("./packages.R")
 
+## Load your R files
+lapply(list.files("./R", full.names = TRUE), source)
 
-
-# Define the pipeline. A pipeline is just a list of targets.
-list(
+## tar_plan supports drake-style targets and also tar_target()
+# tar_plan (
+# # target = function_to_make(arg), ## drake style
+# # tar_target(target2, function_to_make2(arg)) ## targets style
+# )
+tar_plan(
   
   # create list of file targets
   tar_files(files, paste("data/", list.files("data"), sep = "")),
@@ -18,14 +21,13 @@ list(
              iteration = "list"),
   
   # generate initial dataframe from raw data
-  tar_target(df_init, generate_df_init(files, data)),
+  df_init = generate_df_init(files, data),
   
-  # filter cond. id's that have documented POSITIVE near treatment start
-  tar_target(df_pos_init, generate_df_pos_init(df_init, t1 = 14, t2 = 0)),
+  # cond_ids w/ documented POSITIVE(culture OR microscopy) near treatment start
+  df_pos_init = generate_df_pos_init(df_init, t1 = 14, t2 = 0),
   
-  # create plot target
-  tar_target(plot1, generate_plot1(df_pos_init))
-  
+  plot1 = generate_plot1(df_pos_init)
 )
 
-# tar_load(c("files", "data", "df_init", "df_pos_init", "plot1"))
+# tar_make()
+# tar_load(c(files, data, df_init, df_pos_init, plot1))
