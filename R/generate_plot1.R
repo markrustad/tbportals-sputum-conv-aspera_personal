@@ -20,7 +20,9 @@ generate_plot1 <- function(df_pos_init) {
   output <- ggplot(data = df1, aes(x = specimen_collection_date_t)) +
     geom_bar(aes(fill = results_class),
              stat = "bin", binwidth = 15, position = "fill") +
-    geom_density(aes(y = ..scaled..)) +
+    # geom_density(aes(y = ..scaled..)) +
+    stat_count(aes(fill = results_class)) +
+    scale_y_log10() +
     facet_wrap(~ type_of_resistance_2, nrow = 5)
   
   
@@ -36,14 +38,14 @@ generate_plot1 <- function(df_pos_init) {
   
   
   # Histogram period_span
-  df1 <- df %>%
-    filter(!is.na(period_span)) %>%
-    filter(between(period_span, 0, 1000)) %>% # 589 cases with period_span > 1000 days
-    filter(!(outcome %in% c("Still on treatment", "Unknown")))
-  
-  output <- ggplot(data = df1, aes(x = period_span, fill = outcome)) +
-    geom_bar(stat = "bin", binwidth = 30)
-  output + facet_wrap(~ type_of_resistance_2, nrow = 5)
+  # df1 <- df %>%
+  #   filter(!is.na(period_span)) %>%
+  #   filter(between(period_span, 0, 1000)) %>% # 589 cases with period_span > 1000 days
+  #   filter(!(outcome %in% c("Still on treatment", "Unknown")))
+  # 
+  # output <- ggplot(data = df1, aes(x = period_span, fill = outcome)) +
+  #   geom_bar(stat = "bin", binwidth = 30)
+  # output + facet_wrap(~ type_of_resistance_2, nrow = 5)
   
   
   return(output)
