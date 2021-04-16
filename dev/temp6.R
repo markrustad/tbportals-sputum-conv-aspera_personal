@@ -13,7 +13,7 @@ df_no_pos %>% group_by(case_definition) %>% select(condition_id) %>% distinct() 
 
 df_pos_init %>% filter(case_definition == "New" & comorbidity == "None") %>% n_groups()
 
-df1 <- df_pos_init %>% select(condition_id:period_span, # skip over activities_period_start/end
+df1 <- df_discard %>% select(condition_id:period_span, # skip over activities_period_start/end
                               specimen_collection_date_percent, test_date_percent,
                               regimen_count:treatment_status, # regimen_drug_short
                               comorbidity:organization,
@@ -29,29 +29,23 @@ df1$country= fct_rev(factor(df1$country,
                             levels = c("Georgia", "Belarus", "Moldova", "Romania", "Azerbaijan", "Kazakhstan", "Ukraine", "Nigeria", "India")))
 
 df1$case_definition
-plot_case_def <- ggplot(data = df1) + 
-  geom_bar(mapping = aes(y = country, fill = case_definition),
+(plot_case_def <- ggplot(data = df1) + 
+  geom_bar(mapping = aes(x = country, fill = case_definition),
            position = "stack") +
   # coord_flip() +
-  guides(fill=guide_legend("")) +
   ylab("") +
   xlab("Number of cases") +
-  facet_wrap(~gender) +
   scale_fill_brewer(palette = 3) +
   theme_minimal() +
   theme(text = element_text(size=20),
-        legend.position = c(.88,.3),
-        aspect.ratio = 4/3)
+        legend.position = c(.88,.3)))
 
 df_discard %>% n_groups()
 
 ggsave(filename = str_c("plot_case_def_discard", ".png"),
        plot = plot_case_def,
        device = "png",
-       path = "D:/GitHub/NIH",
-       height = 7.50,
-       width = 13.33,
-       units = "in",
+       path = "Z:/GitHub/NIH",
        dpi = 300)
 df_init %>% View()
 

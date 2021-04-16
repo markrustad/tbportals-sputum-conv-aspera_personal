@@ -26,17 +26,14 @@ tar_plan(
   # cond_ids w/ documented POSITIVE(culture OR microscopy) near treatment start
   df_pos_init = generate_df_pos_init(df_init, t1 = 14, t2 = 0),
   
-  df_discard = generate_df_discard(df_init, df_pos_init)
+  # complement of df_init, df_pos_init
+  df_discard = generate_df_discard(df_init, df_pos_init),
   
-  # plot_prop = generate_plot_prop(df_pos_init),
+  plot_prop = generate_plot_prop(df_pos_init)
   
   # plot_count = generate_plot_count(df_pos_init)
 )
 
 # tar_make()
-# tar_load(c(df_init, df_pos_init, df_discard))
-# tar_load(c(files, data, df_init, df_pos_init, df_discard, plot_prop, plot_count))
-# plot_count
+# tar_load(c(df_init, df_pos_init, df_discard, plot_prop))
 # plot_prop
-# plot_prop
-
