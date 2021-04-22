@@ -1,0 +1,47 @@
+---
+title: "Table 1"
+author: "Jennifer Rokhsar"
+date: "4/21/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tableone)
+```
+
+
+```{r overalltab, include=FALSE, echo=TRUE}
+CreateTableOne(data = tab1_vars)
+```
+
+Remove condition_id
+
+```{r tab1_noID, include=FALSE, echo=TRUE}
+#list variables for table
+myVars <- c("age_of_onset", "bmi", "gender", "country", "case_definition", "registration_date", 
+              "type_of_resistance_2", "lung_localization", "x_ray_exists", "ct_exists", "genomic_data_exists")
+
+#Create table1 object
+
+tab2 <- CreateTableOne(vars= myVars, data= tab1_vars)
+```
+
+```{r tab1made, include=TRUE, echo=FALSE}
+tab2
+```
+```{r tabmissing, include=TRUE, echo=FALSE}
+summary(tab2)
+
+```
+
+Stratify by Drug sens
+
+```{r strat_trt, include=TRUE}
+tab3 <- CreateTableOne(vars= myVars, strata = "type_of_resistance_2", data = tab1_vars)
+tab3
+```
+
+
+ss
