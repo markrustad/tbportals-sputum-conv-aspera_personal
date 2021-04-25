@@ -39,5 +39,4 @@ tar_plan(
 )
 
 # tar_make()
-# tar_load(c(df_init, df_pos_init, df_discard, plot_prop))
-# plot_prop
+# tar_load(c(df_init_gr, plot_prop_gr))
