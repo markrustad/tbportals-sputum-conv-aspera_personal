@@ -38,6 +38,9 @@ generate_df_init <- function(files, data) {
             desc(registration_date)) %>%
     mutate(activities_period_end = as.integer(activities_period_end))
   
+  # filter only sputum samples
+  df %<>% filter(specimen_collection_site == "sputum")
+  
   result_classifier <- function(result_string) {
     
     # three classes of results
@@ -160,13 +163,13 @@ generate_df_init <- function(files, data) {
   
   # refactor resistance classes
   df$type_of_resistance <-  factor(df$type_of_resistance,
-                                  levels = c("Sensitive", "Mono DR", "Poly DR",
-                                            "MDR non XDR", "XDR"))
+                                   levels = c("Sensitive", "Mono DR", "Poly DR",
+                                              "MDR non XDR", "XDR"))
   df$type_of_resistance_1 = factor(df$type_of_resistance_1,
-                                  levels = c("Sensitive", "Mono DR",
-                                             "MDR non XDR", "XDR"))
+                                   levels = c("Sensitive", "Mono DR",
+                                              "MDR non XDR", "XDR"))
   df$type_of_resistance_2 = factor(df$type_of_resistance_2,
-                                    levels = c("Sensitive", "MDR non XDR", "XDR"))
+                                   levels = c("Sensitive", "MDR non XDR", "XDR"))
   
   return(df)
 }
