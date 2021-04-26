@@ -33,6 +33,7 @@ generate_plot_prop_gr <- function(df_init_gr) {
   end_day <- 855
   
   # Define set variables----
+  
   col_ <- sym("derived_result")
   x_label <- "Result Date (months after treatment start)"
   y_label_frac <- "Result Distribution"
@@ -40,6 +41,7 @@ generate_plot_prop_gr <- function(df_init_gr) {
   y_label_count <- "Result Counts"
   
   # filter plotting data and add day count columns----
+  
   df1 <- df %>% filter(derived_result != "und" & between(specimen_collection_date_relative, start_day, end_day))
   
   # Result proportion vs result date: free_y axis (density scaled to 1)----
@@ -61,6 +63,15 @@ generate_plot_prop_gr <- function(df_init_gr) {
            axis.ticks = element_blank(),
            text = element_text(size = 20)))
   
+  ggsave(filename = str_c("plot_prop", ".png"),
+         plot = plot_prop,
+         device = "png",
+         path = "C:/Users/rustadmd/Desktop",
+         dpi = 300,
+         width = 13.33,
+         height = 7.5,
+         units = "in")
+  
   # Result proportion vs result date: ----
   (plot_prop_lock <- ggplot(data = df1) + theme_minimal() +
      stat_bin(mapping = aes(x = specimen_collection_date_relative, fill = !!col_),
@@ -79,6 +90,16 @@ generate_plot_prop_gr <- function(df_init_gr) {
            strip.background = element_blank(),
            axis.ticks = element_blank(),
            text = element_text(size = 20)))
+  
+  ggsave(filename = str_c("plot_prop_lock", ".png"),
+         plot = plot_prop_lock,
+         device = "png",
+         path = "C:/Users/rustadmd/Desktop",
+         dpi = 300,
+         width = 13.33,
+         height = 7.5,
+         units = "in")
+  
   
   plot_den_leg <- ggplot(data = df1) +
     geom_density(aes(x = specimen_collection_date_relative, color = type_of_resistance2),size = 1) +
