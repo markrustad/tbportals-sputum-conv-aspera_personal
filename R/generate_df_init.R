@@ -53,7 +53,7 @@ generate_df_init <- function(files, data) {
   # remove cases with Extrapulmonary lung_localization
   extrapulm_conds <- patient %>% filter(lung_localization == "Extrapulmonary") %>%
     select(condition_id) %>% unlist() %>% factor()
-  df %<>% filter(!(condition_id %in% extrapulm_conds)) %>% n_groups()
+  df %<>% filter(!(condition_id %in% extrapulm_conds))
   
   result_classifier <- function(result_string) {
     
