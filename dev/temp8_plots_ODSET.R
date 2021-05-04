@@ -23,30 +23,70 @@ df %<>% left_join(case_metadata) %>%
 
 df1 <- df %>% select(condition_id, case_definition, country) %>% distinct()
 
-plot_country <- ggplot(data = df1) +
-  geom_bar(mapping = aes(x = country, fill = case_definition)) +
-  scale_fill_brewer(palette = 3) +
-  theme_minimal() +
-  coord_flip() +
-  xlab("") +
-  ylab("Number of cases") +
-  theme(text = element_text(size=20),
-        legend.position = c(.80, 0.27),
-        legend.title = element_blank())
+(plot_country <- ggplot(data = df1) + theme_minimal() +
+    geom_bar(mapping = aes(x = country, fill = case_definition)) +
+    scale_fill_brewer(palette = "BrBG") +
+    theme_minimal() +
+    coord_flip() +
+    labs(title = "Selected cohort") +
+    xlab("") +
+    ylab("Number of cases") +
+    guides(fill=guide_legend("Case Definition")) +
+    theme(legend.position = "top",
+          axis.text = element_text(size = 20),
+          axis.title = element_text(size = 20),
+          plot.title = element_text(size = 24)))
 
 
 ggsave(filename = str_c("plot_country", ".png"),
        plot = plot_country,
        device = "png",
        path = "C:/Users/rustadmd/Desktop",
-       dpi = 300)
+       dpi = 300,
+       width = 6.85,
+       height = 7.5,
+       units = "in")
 
-# convert dates from days to months
-df1 %<>% mutate(specimen_collection_date_relative_m = specimen_collection_date_relative/30)
+# condition_id's in our cohort
+pos_conds <- df %>% ungroup() %>% select(condition_id) %>% distinct() %>% 
+  unlist()
 
-ggplot(data = df1) +
-  geom_bar(aes(x = specimen_collection_date_relative_m, fill = !!col_),
-           position="fill",
-           color="black") +
-  scale_x_binned(breaks = seq(from=-6,to=30,by=1) + 0.5) +
-  facet_wrap(~ type_of_resistance2, nrow = 3)
+# complement
+df2 <- df_init_gr$xl_files$`TB Portals Patient Cases_20210202.csv` %>%
+  filter(!(condition_id %in% pos_conds)) %>% 
+  mutate(type_of_resistance2 = factor(case_when(type_of_resistance %in% c("Sensitive", "Mono DR") ~ "Sensitive/Mono DR",
+                                                type_of_resistance %in% c("MDR non XDR", "Poly DR") ~ "MDR non XDR/Poly DR",
+                                                type_of_resistance == "XDR" ~ "XDR"), levels = c("Sensitive/Mono DR",
+                                                                                                 "MDR non XDR/Poly DR",
+                                                                                                 "XDR"))) %>% 
+  mutate(case_definition = factor(case_definition, levels = c("Unknown", "Chronic TB", "Other", "Lost to follow up",
+                                                              "Failure", "Relapse", "New"))) %>% 
+  mutate(country = factor(country, c("India", "Nigeria", "Ukraine", "Kazakhstan", "Azerbaijan",
+                                     "Romania", "Moldova", "Belarus", "Georgia"))) %>% 
+  select(condition_id, case_definition, country) %>% distinct()
+
+(plot_country_comp <- ggplot(data = df2) + theme_minimal() +
+    geom_bar(mapping = aes(x = country, fill = case_definition)) +
+    scale_fill_brewer(palette = "PuOr") +
+    theme_minimal() +
+    coord_flip() +
+    labs(title = "Cohort complement") +
+    xlab("") +
+    ylab("Number of cases") +
+    guides(fill=guide_legend("Case Definition")) +
+    theme(axis.text = element_text(size = 20),
+          axis.title = element_text(size = 20),
+          plot.title = element_text(size = 24),
+          legend.position = "none",
+          panel.grid = element_blank()))
+
+
+ggsave(filename = str_c("plot_country_comp", ".png"),
+       plot = plot_country_comp,
+       device = "png",
+       path = "C:/Users/rustadmd/Desktop",
+       dpi = 300,
+       width = 6.85,
+       height = 7.5,
+       units = "in")
+
