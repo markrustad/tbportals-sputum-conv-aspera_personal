@@ -1,134 +1,94 @@
-generate_plot_prop <- function(df_pos_init) {
-
+##' .. content for \description{} (no empty lines) ..
+##'
+##' .. content for \details{} ..
+##'
+##' @title
+##' @param df_init_gr
+##' @return
+##' @author Mark Rustad
+##' @export
+generate_plot_prop <- function(df_init_gr) {
+  
   # Define plotting dataframe and filtering window for dates----
-
-  df <- df_pos_init %>% ungroup() %>%
-    select(condition_id:period_span, # skip over activities_period_start/end
-           specimen_collection_date_percent, test_date_percent,
-           regimen_count:treatment_status, # regimen_drug_short
-           comorbidity:organization,
-           culture:microscopy,
-           lineage, specimen_collection_site, outcome_cd) %>%
-    distinct()
-
+  
+  df <- df_init_gr$df_status_over_time
+  
+  case_metadata <- df_init_gr$xl_files$`TB Portals Patient Cases_20210202.csv` %>%
+    select(c("patient_id", "identifier", "registration_date", "condition_id", "type_of_resistance",
+             "period_span","regimen_count", "outcome", "treatment_status", "comorbidity", 
+             "social_risk_factors", "age_of_onset", "gender", "country", "education", "employment", 
+             "number_of_children", "number_of_daily_contacts", "case_definition", 
+             "diagnosis_code", "type_of_resistance", "bmi", "lung_localization", 
+             "x_ray_count", "status", "organization","outcome"))
+  
+  df %<>% left_join(case_metadata) %>%
+    mutate(type_of_resistance2 = factor(case_when(type_of_resistance %in% c("Sensitive", "Mono DR") ~ "Sensitive/Mono DR",
+                                                  type_of_resistance %in% c("MDR non XDR", "Poly DR") ~ "MDR non XDR/Poly DR",
+                                                  type_of_resistance == "XDR" ~ "XDR"), levels = c("Sensitive/Mono DR",
+                                                                                                   "MDR non XDR/Poly DR",
+                                                                                                   "XDR")))
+  
   # define filtered-date window
-  start_day <- -100
-  end_day <- 800
-
-  # Define set variables----
-
-  col_ <- sym("results_class")
-  x_label <- "Result Date (days after treatment start)"
+  start_day <- -135
+  end_day <- 855
+  
+  # Define set variables
+  col_ <- sym("derived_result")
+  x_label <- "Result Date (months after treatment start)"
   y_label_frac <- "Result Distribution"
-  x_label <- "Result Date (days after treatment start)"
+  x_label <- "Result Date (months after treatment start)"
   y_label_count <- "Result Counts"
-
-  # filter plotting data and add day count columns----
-
-  df1 <- df %>% filter(between(specimen_collection_date_t, start_day, end_day) &
-                         !(microscopyresults == "NULL" & cultureresults == "NULL") &
-                         (results_class != "und"))
-
-   # Result proportion vs result date----
-  plot_prop <- ggplot(data = df1) +
-     stat_bin(mapping = aes(x = specimen_collection_date_t, fill = !!col_),
-              position = "fill",
-              binwidth = 30,
-              color = "black") +
-     facet_wrap(~ type_of_resistance_2, nrow = 5) +
-     guides(fill=guide_legend("Test Result")) +
-     xlab(x_label) +
-     ylab(y_label_frac) +
-     scale_fill_manual(values = c("NEGATIVE" = "#440154FF", "POSITIVE" = "#238A8DFF")) +
-     scale_y_continuous(labels = percent) +
-     theme_minimal() +
-     theme(legend.position = c(.90, .95),
-           panel.grid = element_blank(),
-           # axis.text.y = element_blank(),
-           axis.ticks.x = element_line(),
-           text = element_text(size = 20)) +
-     xlim(-110,850)
-
-  plot_den_leg <- ggplot(data = df1) +
-    geom_density(aes(x = specimen_collection_date_t, color = type_of_resistance_2),size = 1) +
-    facet_wrap(~ type_of_resistance_2, nrow = 3, scales = "free_y") +
-    xlab(x_label) +
+  
+  # filter plotting data and add day count columns
+  df1 <- df %>% filter(derived_result != "und" & between(specimen_collection_date_relative, start_day, end_day))
+  
+  # plot, no caption----
+  plot_prop <- ggplot(data = df1) + theme_minimal() +
+    stat_bin(mapping = aes(x = specimen_collection_date_relative, fill = !!col_),
+             position = "fill", binwidth = 30, color = "black") +
+    scale_fill_manual(values = c("NEGATIVE" = "#440154FF", "POSITIVE" = "#238A8DFF"),
+                      name = "Test Result") +
+    scale_x_continuous(breaks = seq(from=-90, to=870, by=90),
+                       labels = seq(from=-90, to=870, by=90)/30) +
+    scale_y_continuous(n.breaks = 3, labels = percent) +
+    geom_density(mapping = aes(x = specimen_collection_date_relative, y=..ndensity..),
+                 color = "#FDE725FF", size=1, show.legend = FALSE) +
+    facet_wrap(~ type_of_resistance2, nrow = 3) +
+    xlab("Result Date (months after treatment start)") +
     ylab(y_label_frac) +
-    scale_color_manual(values = c("Sensitive" = "#FDE725FF", "MDR non XDR" = "#FDE725FF",
-                                  "XDR" = "#FDE725FF"), labels = c("POSITIVE", "NEGATIVE", "und"),
-                       name = "Test Result") +
-    theme_minimal() +
-    theme(legend.position = "none",
-          panel.grid = element_blank(),
-          # axis.text.y = element_blank(),
-          axis.ticks.x = element_line(color = "transparent"),
-          text = element_text(color = "transparent", size = 20),
-          plot.background = element_blank(),
-          strip.text = element_text(color = "transparent")) +
-    xlim(-110,850)
-
+    theme(legend.position = "bottom",
+          strip.background = element_blank(),
+          axis.ticks = element_blank(),
+          text = element_text(size = 20),
+          legend.text = element_text(size = 16),
+          legend.title = element_text(size = 16),
+          strip.text = element_text(size = 20))
+  
+  # plot, with caption----
+  plot_prop_cap <- ggplot(data = df1) + theme_minimal() +
+    stat_bin(mapping = aes(x = specimen_collection_date_relative, fill = !!col_),
+             position = "fill", binwidth = 30, color = "black") +
+    scale_fill_manual(values = c("NEGATIVE" = "#440154FF", "POSITIVE" = "#238A8DFF"),
+                      name = "Test Result") +
+    scale_x_continuous(breaks = seq(from=-90, to=870, by=90),
+                       labels = seq(from=-90, to=870, by=90)/30) +
+    scale_y_continuous(n.breaks = 3, labels = percent) +
+    geom_density(mapping = aes(x = specimen_collection_date_relative, y=..ndensity..),
+                 color = "#FDE725FF", size=1, show.legend = FALSE) +
+    facet_wrap(~ type_of_resistance2, nrow = 3) +
+    labs(caption = 'Time series of 30-day proportions of POSITIVE (green) and NEGATIVE (purple) sputum test results and the normalized counts of test observations per day\n(yellow) relative to treatment start on day 0 for cases (N = 1,787) stratified by resistance group.  POSITIVE test results correspond to microscopy/culture\ntest observations of "Positive", "20 to 100", "100 to 200", "More than 200", "1 to 19", "10 to 99 in 100 (1+)", "1 to 9 in 100 (1-9/100)", "1 to 9 in 1 (2+)",\n"10 to 99 in 1 (3+)", or "More than 99 in 1 (4+)"; NEGATIVE test results correspond to “Negative” microscopy/culture test observations.') +
+    xlab("Result Date (months after treatment start)") +
+    ylab(y_label_frac) +
+    theme(legend.position = "bottom",
+          strip.background = element_blank(),
+          axis.ticks = element_blank(),
+          text = element_text(size = 20, family = "Calibri"),
+          legend.text = element_text(size = 16),
+          legend.title = element_text(size = 16),
+          strip.text = element_text(size = 20),
+          plot.caption = element_text(size = 14, hjust = 0))
+  
   # return()----
-  return(plot_prop)
+  return(list("plot_prop" = plot_prop, "plot_prop_cap" = plot_prop_cap))
+  
 }
-
-# No labels----
-
-# result frequency
-# plot_prop_nolab <- ggplot(data = df1) +
-#   stat_bin(mapping = aes(x = specimen_collection_date_t, fill = !!col_),
-#            position = "fill",
-#            binwidth = 30,
-#            color = "grey") +
-#   facet_wrap(~ type_of_resistance_2, nrow = 5) +
-#   guides(fill=guide_legend("Test Result")) +
-#   xlab(x_label) +
-#   ylab(y_label_frac) +
-#   scale_y_continuous(labels = percent) +
-#   scale_fill_viridis(discrete = TRUE) +
-#   theme_minimal() +
-#   xlab(NULL) + ylab(NULL) +
-#   theme(legend.position = "none", axis.text = element_blank(),
-#         panel.background = element_rect(fill = "transparent",colour = NA),
-#         plot.background = element_rect(fill = "transparent",colour = NA),
-#         strip.background = element_blank(), strip.text = element_blank(),
-#         panel.grid.major = element_blank(),
-#         panel.grid.minor = element_blank())
-
-# density
-# (plot_den_nolab <- ggplot(data = df1) +
-#   geom_density(aes(x = specimen_collection_date_t), size = 1,
-#                color = viridis(n = 4)[[2]]) +
-#   facet_wrap(~ type_of_resistance_2, nrow = 5, scales = "free_y") +
-#   xlab(NULL) + ylab(NULL) +
-#   theme(legend.position = "none", axis.text = element_blank(), axis.ticks = element_blank(),
-#         panel.grid.major = element_blank(),
-#         panel.grid.minor = element_blank(),
-#         panel.background = element_rect(fill = "transparent",colour = NA),
-#         plot.background = element_rect(fill = "transparent",colour = NA),
-#         strip.background = element_blank(), strip.text = element_blank(),
-#         aspect.ratio = 9/16))
-
-
-# Show plots----
-# plot_prop
-# plot_den_leg
-
-
-# Save plots----
-#
-# ggsave(filename = str_c("plot_prop", ".png"),
-#        plot = plot_prop,
-#        device = "png",
-#        path = "D:/GitHub/NIH",
-#        height = 7.50,
-#        width = 13.3,
-#        units = "in",
-#        dpi = 300)
-#
-# ggsave(filename = str_c("plot_density", ".png"),
-#        plot = plot_den_leg,
-#        device = "png",
-#        path = "D:/GitHub/NIH",
-#        height = 7.50,
-#        units = "in",
-#        dpi = 300)

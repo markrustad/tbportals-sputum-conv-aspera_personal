@@ -33,10 +33,12 @@ tar_plan(
   # complement of df_init, df_pos_init
   df_discard = generate_df_discard(df_init, df_pos_init),
   
-  plot_prop = generate_plot_prop(df_pos_init)
+  plot_prop = generate_plot_prop(df_init_gr),
+  
+  abstract_table_one = generate_abstract_tableone(df_init_gr)
   
   # plot_count = generate_plot_count(df_pos_init)
 )
 
 # tar_make()
-# tar_load(c(df_init_gr, plot_prop_gr))
+# tar_load(c(df_init_gr, plot_prop_gr, plot_prop))

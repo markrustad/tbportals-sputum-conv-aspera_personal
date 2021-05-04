@@ -1,13 +1,3 @@
-##' .. content for \description{} (no empty lines) ..
-##'
-##' .. content for \details{} ..
-##'
-##' @title
-##' @param files
-##' @param data
-##' @return
-##' @author Mark Rustad
-##' @export
 generate_df_init <- function(files, data) {
   
   xl_files <-  data
@@ -27,6 +17,7 @@ generate_df_init <- function(files, data) {
   reg_rmv <- intersect(var_patient,var_reg)
   
   # create master dataframe from joining on condition_id
+  
   df <- patient %>% full_join(select(dst, -(all_of(dst_rmv))), by = "condition_id") %>%
     full_join(select(reg, -(all_of(reg_rmv))), by = "condition_id") %>%
     group_by(condition_id) %>%
@@ -49,11 +40,6 @@ generate_df_init <- function(files, data) {
   
   # filter only sputum samples
   df %<>% filter(specimen_collection_site == "sputum")
-  
-  # remove cases with Extrapulmonary lung_localization
-  extrapulm_conds <- patient %>% filter(lung_localization == "Extrapulmonary") %>%
-    select(condition_id) %>% unlist() %>% factor()
-  df %<>% filter(!(condition_id %in% extrapulm_conds))
   
   result_classifier <- function(result_string) {
     

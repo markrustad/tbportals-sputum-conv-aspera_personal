@@ -42,63 +42,30 @@ generate_plot_prop_gr <- function(df_init_gr) {
   # filter plotting data and add day count columns----
   df1 <- df %>% filter(derived_result != "und" & between(specimen_collection_date_relative, start_day, end_day))
   
-  # Result proportion vs result date: free_y axis (density scaled to 1)----
   (plot_prop <- ggplot(data = df1) + theme_minimal() +
-     stat_bin(mapping = aes(x = specimen_collection_date_relative, fill = !!col_),
-              position = "fill", binwidth = 30, color = "black") +
-     scale_fill_manual(values = c("NEGATIVE" = "#440154FF", "POSITIVE" = "#238A8DFF")) +
-     scale_x_continuous(breaks = seq(from=-90, to=870, by=90),
-                        labels = seq(from=-90, to=870, by=90)/30) +
-     scale_y_continuous(n.breaks = 3, labels = percent) +
-     stat_bin(mapping = aes(x = specimen_collection_date_relative, y=(..ndensity..)),
-              binwidth = 1, color = "#FDE725FF", geom = "line", size=1) +
-     facet_wrap(~ type_of_resistance2, nrow = 3) +
-     guides(fill=guide_legend("Test Result")) +
-     xlab("Result Date (months after treatment start)") +
-     ylab(y_label_frac) +
-     theme(legend.position = "right",
-           strip.background = element_blank(),
-           axis.ticks = element_blank(),
-           text = element_text(size = 20)))
+      stat_bin(mapping = aes(x = specimen_collection_date_relative, fill = !!col_),
+               position = "fill", binwidth = 30, color = "black") +
+      scale_fill_manual(values = c("NEGATIVE" = "#440154FF", "POSITIVE" = "#238A8DFF"),
+                        name = "Test Result") +
+      scale_x_continuous(breaks = seq(from=-90, to=870, by=90),
+                         labels = seq(from=-90, to=870, by=90)/30) +
+      scale_y_continuous(n.breaks = 3, labels = percent) +
+      geom_density(mapping = aes(x = specimen_collection_date_relative, y=..ndensity..),
+                   color = "#FDE725FF", size=1, show.legend = FALSE) +
+      facet_wrap(~ type_of_resistance2, nrow = 3) +
+      xlab("Result Date (months after treatment start)") +
+      ylab(y_label_frac) +
+      theme(legend.position = "bottom",
+            strip.background = element_blank(),
+            axis.ticks = element_blank(),
+            text = element_text(size = 20),
+            legend.text = element_text(size = 16),
+            legend.title = element_text(size = 16),
+            strip.text = element_text(size = 20)))
   
-  # Result proportion vs result date: ----
-  (plot_prop_lock <- ggplot(data = df1) + theme_minimal() +
-     stat_bin(mapping = aes(x = specimen_collection_date_relative, fill = !!col_),
-              position = "fill", binwidth = 30, color = "black") +
-     scale_fill_manual(values = c("NEGATIVE" = "#440154FF", "POSITIVE" = "#238A8DFF")) +
-     scale_x_continuous(breaks = seq(from=-90, to=870, by=90),
-                        labels = seq(from=-90, to=870, by=90)/30) +
-     scale_y_continuous(n.breaks = 3, labels = percent) +
-     stat_bin(mapping = aes(x = specimen_collection_date_relative, y=(..density../max(..density..))),
-              binwidth = 1, color = "#FDE725FF", geom = "line", size=1) +
-     facet_wrap(~ type_of_resistance2, nrow = 3) +
-     guides(fill=guide_legend("Test Result")) +
-     xlab("Result Date (months after treatment start)") +
-     ylab(y_label_frac) +
-     theme(legend.position = "right",
-           strip.background = element_blank(),
-           axis.ticks = element_blank(),
-           text = element_text(size = 20)))
-  
-  plot_den_leg <- ggplot(data = df1) +
-    geom_density(aes(x = specimen_collection_date_relative, color = type_of_resistance2),size = 1) +
-    facet_wrap(~ type_of_resistance2, nrow = 3, scales = "free_y") +
-    xlab(x_label) +
-    ylab(y_label_frac) +
-    scale_color_manual(values = c("Sensitive/Mono DR" = "#FDE725FF", "MDR non XDR/Poly DR" = "#FDE725FF",
-                                  "XDR" = "#FDE725FF"), labels = c("POSITIVE", "NEGATIVE", "und"),
-                       name = "Test Result") +
-    theme_minimal() +
-    theme(legend.position = "none",
-          panel.grid = element_blank(),
-          # axis.text.y = element_blank(),
-          axis.ticks.x = element_line(color = "transparent"),
-          text = element_text(color = "transparent", size = 20),
-          plot.background = element_blank(),
-          strip.text = element_text(color = "transparent")) +
-    xlim(start_day,end_day)
   
   # return()----
-  return(list("plot_prop" = plot_prop, "plot_den_leg" + plot_den_leg))
+  return("plot_prop" = plot_prop)
   
 }
+
