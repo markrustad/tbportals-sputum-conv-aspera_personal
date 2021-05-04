@@ -76,7 +76,7 @@ generate_plot_prop <- function(df_init_gr) {
     geom_density(mapping = aes(x = specimen_collection_date_relative, y=..ndensity..),
                  color = "#FDE725FF", size=1, show.legend = FALSE) +
     facet_wrap(~ type_of_resistance2, nrow = 3) +
-    labs(caption = 'Time series of 30-day proportions of POSITIVE (green) and NEGATIVE (purple) sputum test results and the normalized counts of test observations per day\n(yellow) relative to treatment start on day 0 for cases (N = 1,787) stratified by resistance group.  POSITIVE test results correspond to microscopy/culture\ntest observations of "Positive", "20 to 100", "100 to 200", "More than 200", "1 to 19", "10 to 99 in 100 (1+)", "1 to 9 in 100 (1-9/100)", "1 to 9 in 1 (2+)",\n"10 to 99 in 1 (3+)", or "More than 99 in 1 (4+)"; NEGATIVE test results correspond to “Negative” microscopy/culture test observations.') +
+    labs(caption = 'Time series of 30-day proportions of POSITIVE (green) and NEGATIVE (purple) sputum test results and the normalized counts of test observations per day\n(yellow) relative to treatment start on day 0 for cases (N = 1,787) stratified by resistance group.') +
     xlab("Result Date (months after treatment start)") +
     ylab(y_label_frac) +
     theme(legend.position = "bottom",

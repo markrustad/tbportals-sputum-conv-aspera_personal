@@ -34,6 +34,7 @@ y_label_count <- "Result Counts"
 # filter plotting data and add day count columns
 df1 <- df %>% filter(derived_result != "und" & between(specimen_collection_date_relative, start_day, end_day))
 
+<<<<<<< HEAD
 
 # 13.33 x 7.5, caption----
 (plot <- ggplot(data = df1) + theme_minimal() +
@@ -70,6 +71,9 @@ ggsave(filename = str_c("plot_prop_caption-1333x750", ".png"),
        units = "in")
 
 #13.33 x 13.33, caption----
+=======
+# Caption----
+>>>>>>> 634a5da (updated plot_prop to match figure specifications of Union Lung Conference)
 (plot <- ggplot(data = df1) + theme_minimal() +
          stat_bin(mapping = aes(x = specimen_collection_date_relative, fill = !!col_),
                   position = "fill", binwidth = 30, color = "black") +
@@ -81,12 +85,17 @@ ggsave(filename = str_c("plot_prop_caption-1333x750", ".png"),
          geom_density(mapping = aes(x = specimen_collection_date_relative, y=..ndensity..),
                       color = "#FDE725FF", size=1, show.legend = FALSE) +
          facet_wrap(~ type_of_resistance2, nrow = 3) +
+<<<<<<< HEAD
          labs(caption = 'Time series of 30-day proportions of POSITIVE (green) and NEGATIVE (purple) sputum test results and the normalized counts of test observations per day\n(yellow) relative to treatment start on day 0 for cases (N = 1,787) stratified by resistance group.  The number of test observations recorded between days\n-15 to 15 is indicated for each resistance group.  POSITIVE test results correspond to microscopy/culture test observations of "Positive", "20 to 100",\n"100 to 200", "More than 200", "1 to 19", "10 to 99 in 100 (1+)", "1 to 9 in 100 (1-9/100)", "1 to 9 in 1 (2+)", "10 to 99 in 1 (3+)", or "More than 99 in 1 (4+)";\nNEGATIVE test results correspond to “Negative” microscopy/culture test observations.') +
+=======
+         labs(caption = 'Time series of 30-day proportions of POSITIVE (green) and\nNEGATIVE (purple) sputum test results and the normalized\ncounts of test observations per day (yellow) relative to\ntreatment start on day 0 for cases (N = 1,787) stratified by\nresistance group.') +
+>>>>>>> 634a5da (updated plot_prop to match figure specifications of Union Lung Conference)
          xlab("Result Date (months after treatment start)") +
          ylab(y_label_frac) +
          theme(legend.position = "bottom",
                strip.background = element_blank(),
                axis.ticks = element_blank(),
+<<<<<<< HEAD
                text = element_text(size = 20, family = "Calibri"),
                legend.text = element_text(size = 16),
                legend.title = element_text(size = 16),
@@ -104,6 +113,26 @@ ggsave(filename = str_c("plot_prop_caption-1333x1333", ".png"),
        units = "in")
 
 # 13.33x7.5, no caption----
+=======
+               # text = element_text(size = 20, family = "Calibri"),
+               text = element_text(size = 16),
+               legend.text = element_text(size = 14),
+               legend.title = element_text(size = 14),
+               strip.text = element_text(size = 16),
+               plot.caption = element_text(size = 12, hjust = 0))
+)
+
+ggsave(filename = str_c("plot_prop_caption", ".png"),
+       plot = plot,
+       device = "png",
+       path = "C:/Users/rustadmd/Desktop",
+       dpi = 600,
+       width = 6,
+       height = 8,
+       units = "in")
+
+# No caption----
+>>>>>>> 634a5da (updated plot_prop to match figure specifications of Union Lung Conference)
 (plot_nocap <- ggplot(data = df1) + theme_minimal() +
          stat_bin(mapping = aes(x = specimen_collection_date_relative, fill = !!col_),
                   position = "fill", binwidth = 30, color = "black") +
@@ -120,15 +149,24 @@ ggsave(filename = str_c("plot_prop_caption-1333x1333", ".png"),
          theme(legend.position = "bottom",
                strip.background = element_blank(),
                axis.ticks = element_blank(),
+<<<<<<< HEAD
                text = element_text(size = 20, family = "Calibri"),
                legend.text = element_text(size = 16),
                legend.title = element_text(size = 16),
                strip.text = element_text(size = 20))
+=======
+               # text = element_text(size = 20, family = "Calibri"),
+               text = element_text(size = 16),
+               legend.text = element_text(size = 14),
+               legend.title = element_text(size = 14),
+               strip.text = element_text(size = 16))
+>>>>>>> 634a5da (updated plot_prop to match figure specifications of Union Lung Conference)
 )
 
 ggsave(filename = str_c("plot_prop", ".png"),
        plot = plot_nocap,
        device = "png",
+<<<<<<< HEAD
        path = "C:/Users/madar/Desktop",
        dpi = 300,
        width = 13.33,
@@ -165,4 +203,10 @@ ggsave(filename = str_c("plot_prop-1333x1333", ".png"),
        dpi = 300,
        width = 13.33,
        height = 13.33,
+=======
+       path = "C:/Users/rustadmd/Desktop",
+       dpi = 600,
+       width = 6,
+       height = 8,
+>>>>>>> 634a5da (updated plot_prop to match figure specifications of Union Lung Conference)
        units = "in")
